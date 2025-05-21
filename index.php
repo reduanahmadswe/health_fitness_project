@@ -112,8 +112,8 @@ require_once 'includes/config.php';
         }
         
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/hero-bg.jpg') no-repeat center center/cover;
-            height: 55vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('./images/TransformYourLifeTheIncrediblePowerofFitness.jpg') no-repeat center center/cover;
+            height: 60vh;
             display: flex;
             align-items: center;
             justify-content: center;

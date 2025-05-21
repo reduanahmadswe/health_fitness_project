@@ -293,7 +293,7 @@ $trainers = [
         
         .trainers-hero {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../images/trainers-bg.jpg') no-repeat center center/cover;
-            height: 50vh;
+            height: 55vh;
             display: flex;
             flex-direction: column;
             align-items: center;

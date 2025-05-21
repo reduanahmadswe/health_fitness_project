@@ -185,9 +185,9 @@ if ($category_result) {
         
         /* Search Hero Section */
         .search-hero {
-            background: linear-gradient(135deg, rgba(74, 111, 165, 0.9), rgba(22, 96, 136, 0.9)), url('../images/search-bg.jpg');
+            background: linear-gradient(135deg, rgba(74, 111, 165, 0.9), rgba(22, 96, 136, 0.9)), url('../images/search-bg.jpeg');
             background-size: cover;
-            background-position: center;
+            background-position: top;
             color: white;
             padding: 6rem 0;
             text-align: center;

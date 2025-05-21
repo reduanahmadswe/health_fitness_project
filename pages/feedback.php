@@ -174,7 +174,7 @@ if (isset($_SESSION['user_id'])) {
         
         .feedback-hero {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/feedback-bg.jpg') no-repeat center center/cover;
-            height: 40vh;
+            height: 60vh;
             display: flex;
             flex-direction: column;
             align-items: center;
