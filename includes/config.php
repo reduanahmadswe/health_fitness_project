@@ -25,11 +25,13 @@ if (mysqli_query($conn, $sql)) {
 $sql = "CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    reset_token VARCHAR(100) DEFAULT NULL,
+    reset_token_expiry DATETIME DEFAULT NULL,
     full_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 
 if (!mysqli_query($conn, $sql)) {

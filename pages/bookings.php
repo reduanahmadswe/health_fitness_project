@@ -4,50 +4,22 @@ require_once '../includes/config.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-$error_message = '';
-$success_message = '';
-
-// Handle booking cancellation
-if (isset($_POST['cancel_booking'])) {
-    $booking_id = $_POST['booking_id'];
-    
-    // Verify that the booking belongs to the user
-    $stmt = $conn->prepare("SELECT id FROM bookings WHERE id = ? AND user_id = ?");
-    $stmt->bind_param("ii", $booking_id, $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows > 0) {
-        // Update booking status to cancelled
-        $stmt = $conn->prepare("UPDATE bookings SET status = 'cancelled' WHERE id = ?");
-        $stmt->bind_param("i", $booking_id);
-        
-        if ($stmt->execute()) {
-            $success_message = "Booking cancelled successfully.";
-        } else {
-            $error_message = "Error cancelling booking. Please try again.";
-        }
-    } else {
-        $error_message = "Invalid booking ID.";
-    }
+    header('Location: login.php');
+    exit;
 }
 
 // Fetch user's bookings
-$sql = "SELECT b.*, s.name as service_name, s.price 
+$user_id = $_SESSION['user_id'];
+$sql = "SELECT b.*, s.name as service_name, s.category, s.price 
         FROM bookings b 
         JOIN services s ON b.service_id = s.id 
         WHERE b.user_id = ? 
         ORDER BY b.booking_date DESC, b.booking_time DESC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$bookings = $result->fetch_all(MYSQLI_ASSOC);
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $user_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -66,13 +38,28 @@ $bookings = $result->fetch_all(MYSQLI_ASSOC);
                 <h1>Health & Fitness Center</h1>
             </div>
             <div class="nav-links">
-                <a href="../index.php">Home</a>
-                <a href="services.php">Services</a>
-                <a href="classes.php">Classes</a>
-                <a href="trainers.php">Trainers</a>
-                <a href="profile.php">Profile</a>
-                <a href="bookings.php">My Bookings</a>
-                <a href="logout.php">Logout</a>
+                <!-- Main Navigation -->
+                <div class="nav-main">
+                    <a href="../index.php" class="nav-item">Home</a>
+                    <a href="services.php" class="nav-item">Services</a>
+                    <a href="classes.php" class="nav-item">Classes</a>
+                    <a href="trainers.php" class="nav-item">Trainers</a>
+                    <a href="feedback.php" class="nav-item">Feedback</a>
+                    <a href="about.php" class="nav-item">About Us</a>
+                    <a href="search.php" class="nav-item">Search</a>
+                </div>
+
+                <!-- User Navigation -->
+                <div class="nav-user">
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <a href="profile.php" class="nav-item">Profile</a>
+                        <a href="bookings.php" class="nav-item">My Bookings</a>
+                        <a href="logout.php" class="nav-item">Logout</a>
+                    <?php else: ?>
+                        <a href="login.php" class="nav-item">Login</a>
+                        <a href="register.php" class="nav-item">Register</a>
+                    <?php endif; ?>
+                </div>
             </div>
         </nav>
     </header>
@@ -80,62 +67,56 @@ $bookings = $result->fetch_all(MYSQLI_ASSOC);
     <main>
         <section class="bookings-hero">
             <h1>My Bookings</h1>
-            <p>View and manage your fitness appointments</p>
+            <p>View and manage your scheduled sessions</p>
         </section>
 
-        <?php if ($error_message): ?>
-            <div class="alert alert-error">
-                <?php echo htmlspecialchars($error_message); ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if ($success_message): ?>
-            <div class="alert alert-success">
-                <?php echo htmlspecialchars($success_message); ?>
-            </div>
-        <?php endif; ?>
-
-        <section class="bookings-grid">
-            <?php if (empty($bookings)): ?>
-                <div class="no-bookings">
-                    <p>You don't have any bookings yet.</p>
-                    <a href="services.php" class="btn btn-primary">Book a Service</a>
-                </div>
-            <?php else: ?>
-                <div class="grid">
-                    <?php foreach ($bookings as $booking): ?>
-                        <div class="card booking-card">
-                            <div class="booking-info">
-                                <h3><?php echo htmlspecialchars($booking['service_name']); ?></h3>
-                                <p class="date">
-                                    <i class="far fa-calendar"></i>
-                                    <?php echo date('F j, Y', strtotime($booking['booking_date'])); ?>
-                                </p>
-                                <p class="time">
-                                    <i class="far fa-clock"></i>
-                                    <?php echo date('g:i A', strtotime($booking['booking_time'])); ?>
-                                </p>
-                                <p class="price">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <?php echo number_format($booking['price'], 2); ?>
-                                </p>
-                                <p class="status <?php echo strtolower($booking['status']); ?>">
-                                    Status: <?php echo ucfirst($booking['status']); ?>
-                                </p>
-                                
-                                <?php if ($booking['status'] === 'pending'): ?>
-                                    <form method="POST" class="cancel-form" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
-                                        <input type="hidden" name="booking_id" value="<?php echo $booking['id']; ?>">
-                                        <button type="submit" name="cancel_booking" class="btn btn-danger">
-                                            Cancel Booking
-                                        </button>
-                                    </form>
+        <section class="bookings-content">
+            <div class="bookings-container">
+                <?php if (!empty($bookings)): ?>
+                    <div class="bookings-grid">
+                        <?php foreach ($bookings as $booking): ?>
+                            <div class="booking-card">
+                                <div class="booking-header">
+                                    <h3><?php echo htmlspecialchars($booking['service_name']); ?></h3>
+                                    <span class="status status-<?php echo strtolower($booking['status']); ?>">
+                                        <?php echo htmlspecialchars($booking['status']); ?>
+                                    </span>
+                                </div>
+                                <div class="booking-details">
+                                    <p class="category">
+                                        <i class="fas fa-tag"></i>
+                                        <?php echo htmlspecialchars($booking['category']); ?>
+                                    </p>
+                                    <p class="date">
+                                        <i class="fas fa-calendar"></i>
+                                        <?php echo date('F j, Y', strtotime($booking['booking_date'])); ?>
+                                    </p>
+                                    <p class="time">
+                                        <i class="fas fa-clock"></i>
+                                        <?php echo date('g:i A', strtotime($booking['booking_time'])); ?>
+                                    </p>
+                                    <p class="price">
+                                        <i class="fas fa-dollar-sign"></i>
+                                        <?php echo number_format($booking['price'], 2); ?>
+                                    </p>
+                                </div>
+                                <?php if ($booking['status'] === 'Pending'): ?>
+                                    <div class="booking-actions">
+                                        <a href="cancel-booking.php?id=<?php echo $booking['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">Cancel Booking</a>
+                                    </div>
                                 <?php endif; ?>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="no-bookings">
+                        <i class="fas fa-calendar-times fa-3x"></i>
+                        <h2>No Bookings Found</h2>
+                        <p>You haven't made any bookings yet.</p>
+                        <a href="services.php" class="btn btn-primary">Book a Service</a>
+                    </div>
+                <?php endif; ?>
+            </div>
         </section>
     </main>
 
@@ -182,68 +163,116 @@ $bookings = $result->fetch_all(MYSQLI_ASSOC);
             margin-bottom: 1rem;
         }
 
-        .no-bookings {
-            text-align: center;
-            padding: 3rem;
-            background: #f8f9fa;
-            border-radius: 8px;
+        .bookings-container {
+            max-width: 1200px;
             margin: 2rem auto;
-            max-width: 600px;
+            padding: 0 1rem;
+        }
+
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .booking-card {
-            padding: 2rem;
-            margin-bottom: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
-        .booking-info h3 {
+        .booking-header {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .booking-header h3 {
             color: #2c3e50;
-            margin-bottom: 1rem;
+            margin: 0;
         }
 
-        .booking-info p {
-            margin-bottom: 0.5rem;
+        .booking-details {
+            padding: 1.5rem;
+        }
+
+        .booking-details p {
+            margin: 0.75rem 0;
             color: #666;
         }
 
-        .booking-info i {
-            margin-right: 0.5rem;
+        .booking-details i {
+            width: 20px;
             color: #3498db;
+            margin-right: 0.5rem;
+        }
+
+        .booking-actions {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            text-align: right;
         }
 
         .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: bold;
-            padding: 0.5rem;
-            border-radius: 4px;
-            margin: 1rem 0;
         }
 
-        .status.pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status.confirmed {
+        .status-confirmed {
             background: #d4edda;
             color: #155724;
         }
 
-        .status.cancelled {
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelled {
             background: #f8d7da;
             color: #721c24;
         }
 
-        .cancel-form {
-            margin-top: 1rem;
+        .no-bookings {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .btn-danger {
-            background: #dc3545;
-            color: white;
+        .no-bookings i {
+            color: #ddd;
+            margin-bottom: 1rem;
         }
 
-        .btn-danger:hover {
-            background: #c82333;
+        .no-bookings h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .no-bookings p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .bookings-hero h1 {
+                font-size: 2rem;
+            }
+
+            .booking-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
         }
     </style>
 </body>

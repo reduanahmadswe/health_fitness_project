@@ -15,7 +15,7 @@ body {
 .header {
     background: linear-gradient(to right, #2c3e50, #3498db);
     color: white;
-    padding: 1rem;
+    padding: 0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
@@ -23,28 +23,89 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    backdrop-filter: blur(5px);
+    padding: 1rem 2rem;
+    background: transparent;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    color: white;
+    margin: 0;
 }
 
 .nav-links {
     display: flex;
+    align-items: center;
     gap: 2rem;
 }
 
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
+/* Main Navigation */
+.nav-main {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* Search Container */
+.search-container {
+    position: relative;
+    margin: 0 1rem;
+}
+
+.search-container input {
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    width: 200px;
     transition: all 0.3s ease;
 }
 
-.nav-links a:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+.search-container input:focus {
+    width: 250px;
+    border-color: #3498db;
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+/* User Navigation */
+.nav-user {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* Navigation Items */
+.nav-item {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-item:hover {
+    color: #f1c40f;
+}
+
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #f1c40f;
+    transition: width 0.3s ease;
+}
+
+.nav-item:hover::after {
+    width: 100%;
 }
 
 /* Form styles */
@@ -124,10 +185,53 @@ body {
 }
 
 /* Responsive design */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 1rem;
+    }
+    
+    .nav-main {
+        gap: 1rem;
+    }
+    
+    .search-container input {
+        width: 150px;
+    }
+    
+    .search-container input:focus {
+        width: 200px;
+    }
+}
+
 @media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
     .nav-links {
         flex-direction: column;
+        width: 100%;
         gap: 1rem;
+    }
+    
+    .nav-main, .nav-user {
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .search-container {
+        width: 100%;
+        margin: 1rem 0;
+    }
+    
+    .search-container input {
+        width: 100%;
+    }
+    
+    .search-container input:focus {
+        width: 100%;
     }
     
     .grid {

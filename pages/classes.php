@@ -24,18 +24,26 @@ $classes = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <h1>Health & Fitness Center</h1>
             </div>
             <div class="nav-links">
-                <a href="../index.php">Home</a>
-                <a href="services.php">Services</a>
-                <a href="classes.php">Classes</a>
-                <a href="trainers.php">Trainers</a>
-                <?php if(isset($_SESSION['user_id'])): ?>
-                    <a href="profile.php">Profile</a>
-                    <a href="bookings.php">My Bookings</a>
-                    <a href="logout.php">Logout</a>
-                <?php else: ?>
-                    <a href="login.php">Login</a>
-                    <a href="register.php">Register</a>
-                <?php endif; ?>
+                <div class="nav-main">
+                    <a href="../index.php" class="nav-item">Home</a>
+                    <a href="services.php" class="nav-item">Services</a>
+                    <a href="classes.php" class="nav-item">Classes</a>
+                    <a href="trainers.php" class="nav-item">Trainers</a>
+                    <a href="feedback.php" class="nav-item">Feedback</a>
+                    <a href="about.php" class="nav-item">About Us</a>
+                    <a href="search.php" class="nav-item">Search</a>
+                </div>
+
+                <div class="nav-user">
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <a href="profile.php" class="nav-item">Profile</a>
+                        <a href="bookings.php" class="nav-item">My Bookings</a>
+                        <a href="logout.php" class="nav-item">Logout</a>
+                    <?php else: ?>
+                        <a href="login.php" class="nav-item">Login</a>
+                        <a href="register.php" class="nav-item">Register</a>
+                    <?php endif; ?>
+                </div>
             </div>
         </nav>
     </header>
@@ -197,4 +205,4 @@ $classes = mysqli_fetch_all($result, MYSQLI_ASSOC);
         }
     </style>
 </body>
-</html> 
+</html>
