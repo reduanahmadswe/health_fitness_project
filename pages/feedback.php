@@ -6,8 +6,6 @@ $error_message = '';
 $success_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'] ?? '';
-    $email = $_POST['email'] ?? '';
     $rating = $_POST['rating'] ?? 0;
     $message = $_POST['message'] ?? '';
     $user_id = $_SESSION['user_id'] ?? null;
@@ -17,20 +15,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($rating < 1 || $rating > 5) {
         $error_message = "Please select a valid rating.";
     } else {
-        $sql = "INSERT INTO feedback (user_id, name, email, rating, message) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO feedback (user_id, rating, message, created_at) VALUES (?, ?, ?, NOW())";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "issis", $user_id, $name, $email, $rating, $message);
+        mysqli_stmt_bind_param($stmt, "iis", $user_id, $rating, $message);
         
         if (mysqli_stmt_execute($stmt)) {
             $success_message = "Thank you for your feedback!";
-            // Clear form data
-            $name = $email = $message = '';
+            $message = '';
             $rating = 0;
         } else {
             $error_message = "Error submitting feedback. Please try again.";
         }
     }
 }
+
+// Fetch user's previous feedback if logged in
+$previous_feedback = [];
+
+if (isset($_SESSION['user_id'])) {
+    $sql = "SELECT * FROM feedback WHERE user_id = ? ORDER BY created_at DESC";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "i", $_SESSION['user_id']);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        
+        if ($result) {
+            $previous_feedback = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        }
+    }
+}
+
+
 
 // Fetch user's previous feedback if logged in
 $previous_feedback = [];
@@ -50,14 +67,501 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback - Health & Fitness Center</title>
-    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #4fc3a1;
+            --dark: #2d3748;
+            --light: #f8f9fa;
+            --gray: #e2e8f0;
+            --dark-gray: #a0aec0;
+            --success: #48bb78;
+            --error: #f56565;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f5f7fa;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, white, var(--gray));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-main, .nav-user {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover::after {
+            width: 100%;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .feedback-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/feedback-bg.jpg') no-repeat center center/cover;
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 3rem;
+        }
+        
+        .feedback-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s ease;
+        }
+        
+        .feedback-hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem auto;
+            max-width: 800px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background-color: rgba(245, 101, 101, 0.2);
+            border-left: 4px solid var(--error);
+            color: var(--error);
+        }
+        
+        .alert-success {
+            background-color: rgba(72, 187, 120, 0.2);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+        
+        .feedback-container {
+            max-width: 800px;
+            margin: 0 auto 4rem;
+        }
+        
+        .feedback-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 3rem;
+        }
+        
+        .rating-container {
+            margin-bottom: 2rem;
+        }
+        
+        .rating-container label {
+            display: block;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            cursor: pointer;
+            font-size: 2rem;
+            color: var(--gray);
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffc107;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 150px;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 195, 161, 0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 195, 161, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(79, 195, 161, 0.6);
+            background-color: #3da98a;
+        }
+        
+        .previous-feedback {
+            margin-top: 3rem;
+        }
+        
+        .previous-feedback h2 {
+            font-size: 1.8rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .previous-feedback h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent);
+        }
+        
+        .feedback-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .feedback-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .feedback-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feedback-rating {
+            margin-bottom: 1rem;
+        }
+        
+        .feedback-rating i {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-right: 0.3rem;
+        }
+        
+        .feedback-rating i.active {
+            color: #ffc107;
+        }
+        
+        .feedback-message {
+            color: var(--dark-gray);
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        
+        .feedback-date {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 4rem 0 0;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .footer-section {
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent);
+        }
+        
+        .footer-section p, .footer-section a {
+            color: var(--gray);
+            margin-bottom: 0.8rem;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: var(--accent);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            transform: translateY(-3px);
+            color: var(--accent);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            margin-top: 2rem;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .feedback-hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 70px);
+                background: linear-gradient(135deg, var(--primary), var(--secondary));
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+                transition: left 0.3s ease;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-main, .nav-user {
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .nav-item {
+                padding: 1rem;
+                width: 100%;
+            }
+            
+            .feedback-hero {
+                height: 35vh;
+            }
+            
+            .feedback-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .feedback-hero p {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .feedback-hero {
+                height: 30vh;
+            }
+            
+            .previous-feedback h2 {
+                font-size: 1.5rem;
+            }
+            
+            .star-rating label {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="header">
         <nav class="navbar">
             <div class="logo">
                 <h1>Health & Fitness Center</h1>
+            </div>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
             </div>
             <div class="nav-links">
                 <!-- Main Navigation -->
@@ -104,47 +608,55 @@ if (isset($_SESSION['user_id'])) {
             </div>
         <?php endif; ?>
 
-        <section class="feedback-section">
-            <div class="feedback-container">
-                <form id="feedbackForm" method="POST" class="feedback-form">
-                    <div class="rating-container">
-                        <label>Your Rating:</label>
-                        <div class="star-rating">
-                            <?php for ($i = 5; $i >= 1; $i--): ?>
-                                <input type="radio" id="star<?php echo $i; ?>" name="rating" value="<?php echo $i; ?>" <?php echo ($rating == $i) ? 'checked' : ''; ?>>
-                                <label for="star<?php echo $i; ?>"><i class="fas fa-star"></i></label>
-                            <?php endfor; ?>
-                        </div>
-                    </div>
+        <?php
+// Initialize variables to avoid "undefined variable" warnings
+$rating = isset($_POST['rating']) ? $_POST['rating'] : '';
+$message = isset($_POST['message']) ? $_POST['message'] : '';
 
-                    <div class="form-group">
-                        <label for="message">Your Feedback:</label>
-                        <textarea id="message" name="message" rows="5" required><?php echo htmlspecialchars($message ?? ''); ?></textarea>
-                    </div>
 
-                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
-                </form>
-
-                <?php if (!empty($previous_feedback)): ?>
-                    <div class="previous-feedback">
-                        <h2>Your Previous Feedback</h2>
-                        <div class="feedback-list">
-                            <?php foreach ($previous_feedback as $feedback): ?>
-                                <div class="feedback-card">
-                                    <div class="feedback-rating">
-                                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                                            <i class="fas fa-star <?php echo $i <= $feedback['rating'] ? 'active' : ''; ?>"></i>
-                                        <?php endfor; ?>
-                                    </div>
-                                    <p class="feedback-message"><?php echo htmlspecialchars($feedback['message']); ?></p>
-                                    <p class="feedback-date"><?php echo date('F j, Y', strtotime($feedback['created_at'])); ?></p>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
+?>
+<section class="feedback-section">
+    <div class="feedback-container">
+        <form id="feedbackForm" method="POST" class="feedback-form">
+            <div class="rating-container">
+                <label>Your Rating:</label>
+                <div class="star-rating">
+                    <?php for ($i = 5; $i >= 1; $i--): ?>
+                        <input type="radio" id="star<?php echo $i; ?>" name="rating" value="<?php echo $i; ?>" <?php echo ($rating == $i) ? 'checked' : ''; ?>>
+                        <label for="star<?php echo $i; ?>"><i class="fas fa-star"></i></label>
+                    <?php endfor; ?>
+                </div>
             </div>
-        </section>
+
+            <div class="form-group">
+                <label for="message">Your Feedback:</label>
+                <textarea id="message" name="message" rows="5" required><?php echo htmlspecialchars($message); ?></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </form>
+
+        <?php if (!empty($previous_feedback)): ?>
+            <div class="previous-feedback">
+                <h2>Your Previous Feedback</h2>
+                <div class="feedback-list">
+                    <?php foreach ($previous_feedback as $feedback): ?>
+                        <div class="feedback-card">
+                            <div class="feedback-rating">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <i class="fas fa-star <?php echo $i <= $feedback['rating'] ? 'active' : ''; ?>"></i>
+                                <?php endfor; ?>
+                            </div>
+                            <p class="feedback-message"><?php echo htmlspecialchars($feedback['message']); ?></p>
+                            <p class="feedback-date"><?php echo date('F j, Y', strtotime($feedback['created_at'])); ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
+
     </main>
 
     <footer>
@@ -175,188 +687,19 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </footer>
 
-    <style>
-        .feedback-hero {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../images/feedback-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            color: white;
-        }
-
-        .feedback-hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .feedback-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .feedback-form {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .rating-container {
-            margin-bottom: 1.5rem;
-        }
-
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-            gap: 0.5rem;
-        }
-
-        .star-rating input {
-            display: none;
-        }
-
-        .star-rating label {
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: #ddd;
-            transition: color 0.2s;
-        }
-
-        .star-rating label:hover,
-        .star-rating label:hover ~ label,
-        .star-rating input:checked ~ label {
-            color: #ffd700;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: vertical;
-        }
-
-        .previous-feedback {
-            margin-top: 3rem;
-        }
-
-        .previous-feedback h2 {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-        }
-
-        .feedback-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .feedback-rating {
-            margin-bottom: 1rem;
-        }
-
-        .feedback-rating i {
-            color: #ddd;
-            margin-right: 0.25rem;
-        }
-
-        .feedback-rating i.active {
-            color: #ffd700;
-        }
-
-        .feedback-message {
-            color: #666;
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        .feedback-date {
-            color: #999;
-            font-size: 0.9rem;
-        }
-
-        /* Add search styles */
-        .search-container {
-            position: relative;
-            margin: 0 1rem;
-            display: inline-block;
-        }
-
-        .search-input {
-            padding: 0.5rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            width: 200px;
-            transition: width 0.3s ease;
-        }
-
-        .search-input:focus {
-            width: 300px;
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .search-results {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .search-result-item {
-            display: block;
-            padding: 0.75rem 1rem;
-            text-decoration: none;
-            color: #333;
-            border-bottom: 1px solid #eee;
-        }
-
-        .search-result-item:hover {
-            background: #f8f9fa;
-        }
-
-        .result-title {
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-        }
-
-        .result-category {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .no-results {
-            padding: 1rem;
-            text-align: center;
-            color: #666;
-        }
-    </style>
-
-    <!-- Add search script -->
-    <script src="../js/search.js"></script>
     <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            hamburger.innerHTML = navLinks.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Form validation
         document.getElementById('feedbackForm').addEventListener('submit', function(e) {
             const rating = document.querySelector('input[name="rating"]:checked');
             const message = document.getElementById('message').value.trim();
@@ -373,6 +716,31 @@ if (isset($_SESSION['user_id'])) {
                 return;
             }
         });
+        
+        // Add animation to feedback cards as they come into view
+        const animateOnScroll = () => {
+            const elements = document.querySelectorAll('.feedback-card');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if(elementPosition < screenPosition) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        // Set initial state for animation
+        document.querySelectorAll('.feedback-card').forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        });
+        
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
     </script>
 </body>
-</html> 
+</html>
