@@ -421,9 +421,15 @@ require_once 'includes/config.php';
     <main>
         <section class="hero">
             <div class="hero-content">
-                <h1>Transform Your Life</h1>
-                <p>Join our state-of-the-art fitness center and start your journey to a healthier lifestyle</p>
-                <a href="pages/register.php" class="btn btn-primary">Get Started</a>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <h1>Welcome Back!</h1>
+                    <p>Continue your fitness journey with our expert trainers and state-of-the-art facilities</p>
+                    <a href="pages/profile.php" class="btn btn-primary">View Profile</a>
+                <?php else: ?>
+                    <h1>Transform Your Life</h1>
+                    <p>Join our state-of-the-art fitness center and start your journey to a healthier lifestyle</p>
+                    <a href="pages/register.php" class="btn btn-primary">Get Started</a>
+                <?php endif; ?>
             </div>
         </section>
 
@@ -447,9 +453,15 @@ require_once 'includes/config.php';
 
         <section class="cta">
             <div class="cta-content">
-                <h2>Ready to Start Your Fitness Journey?</h2>
-                <p>Join us today and get your first week free!</p>
-                <a href="pages/register.php" class="btn btn-primary">Sign Up Now</a>
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <h2>Ready for Your Next Workout?</h2>
+                    <p>Check out our latest classes and book your spot!</p>
+                    <a href="pages/classes.php" class="btn btn-primary">View Classes</a>
+                <?php else: ?>
+                    <h2>Ready to Start Your Fitness Journey?</h2>
+                    <p>Join us today and get your first week free!</p>
+                    <a href="pages/register.php" class="btn btn-primary">Sign Up Now</a>
+                <?php endif; ?>
             </div>
         </section>
     </main>
@@ -481,6 +493,7 @@ require_once 'includes/config.php';
             <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
+
 
     <script src="js/index.js"></script>
 

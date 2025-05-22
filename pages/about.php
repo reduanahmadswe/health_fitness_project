@@ -523,21 +523,21 @@ require_once '../includes/config.php';
                 <h2>Our Leadership Team</h2>
                 <div class="team-grid">
                     <div class="team-member">
-                        <img src="../images/team1.jpg" alt="John Doe">
+                        <img src="../images/trainers/trainer1.jpg" alt="John Doe">
                         <div class="team-info">
                             <h3>John Doe</h3>
                             <p>Founder & CEO</p>
                         </div>
                     </div>
                     <div class="team-member">
-                        <img src="../images/team2.jpg" alt="Jane Smith">
+                        <img src="../images/trainers/trainer2.jpg" alt="Jane Smith">
                         <div class="team-info">
                             <h3>Jane Smith</h3>
                             <p>Head of Training</p>
                         </div>
                     </div>
                     <div class="team-member">
-                        <img src="../images/team3.jpg" alt="Mike Johnson">
+                        <img src="../images/trainers/trainer4.jpg" alt="Mike Johnson">
                         <div class="team-info">
                             <h3>Mike Johnson</h3>
                             <p>Fitness Director</p>
@@ -550,7 +550,7 @@ require_once '../includes/config.php';
                 <h2>Our Facilities</h2>
                 <div class="facilities-grid">
                     <div class="facility-card">
-                        <img src="../images/gym.jpg" alt="Modern Gym">
+                        <img src="../images/facilities/GYM-01.png" alt="Modern Gym">
                         <div class="facility-info">
                             <h3>Modern Gym</h3>
                             <p>State-of-the-art equipment and spacious workout areas</p>

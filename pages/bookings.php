@@ -8,6 +8,17 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Display success/error messages
+if (isset($_SESSION['success'])) {
+    echo '<div class="alert alert-success">' . $_SESSION['success'] . '</div>';
+    unset($_SESSION['success']);
+}
+
+if (isset($_SESSION['error'])) {
+    echo '<div class="alert alert-danger">' . $_SESSION['error'] . '</div>';
+    unset($_SESSION['error']);
+}
+
 // Fetch user's bookings
 $user_id = $_SESSION['user_id'];
 $sql = "SELECT b.*, s.name as service_name, s.category, s.price 
@@ -372,6 +383,31 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             background-color: rgba(0, 0, 0, 0.2);
             margin-top: 2rem;
         }
+
+        .alert {
+            padding: 1rem;
+            margin: 1rem auto;
+            max-width: 1200px;
+            border-radius: 5px;
+            text-align: center;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .alert-success {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .alert-danger {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .booking-actions form {
+            display: inline;
+        }
         
         /* Animations */
         @keyframes fadeInDown {
@@ -541,11 +577,14 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                     <?php echo number_format($booking['price'], 2); ?>
                                 </p>
                             </div>
-                            <?php if ($booking['status'] === 'Pending'): ?>
+                            <?php if ($booking['status'] === 'pending'): ?>
                                 <div class="booking-actions">
-                                    <a href="cancel-booking.php?id=<?php echo $booking['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
-                                        Cancel Booking
-                                    </a>
+                                    <form action="cancel-booking.php" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?')">
+                                        <input type="hidden" name="booking_id" value="<?php echo $booking['id']; ?>">
+                                        <button type="submit" class="btn btn-danger">
+                                            Cancel Booking
+                                        </button>
+                                    </form>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -561,6 +600,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <?php endif; ?>
         </section>
     </main>
+
 
     <footer>
         <div class="footer-content">

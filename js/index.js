@@ -1,4 +1,10 @@
-
+function handleSignUpClick() {
+    <?php if(isset($_SESSION['user_id'])): ?>
+        window.location.href = 'pages/profile.php';
+    <?php else: ?>
+        window.location.href = 'pages/register.php';
+    <?php endif; ?>
+}
 // Mobile menu toggle
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');

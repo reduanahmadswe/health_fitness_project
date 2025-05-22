@@ -645,9 +645,9 @@ if ($category_result) {
                         <div class="results-grid">
                             <?php foreach ($results as $result): ?>
                                 <div class="result-card" data-category="<?php echo htmlspecialchars($result['category']); ?>">
-                                    <div class="result-image">
+                                    <!-- <div class="result-image">
                                         <img src="../images/services/<?php echo htmlspecialchars($result['image'] ?? 'default-service.jpg'); ?>" alt="<?php echo htmlspecialchars($result['name']); ?>">
-                                    </div>
+                                    </div> -->
                                     <div class="result-info">
                                         <span class="result-category"><?php echo htmlspecialchars($result['category']); ?></span>
                                         <h3><?php echo highlightKeywords(htmlspecialchars($result['name']), $search_query); ?></h3>

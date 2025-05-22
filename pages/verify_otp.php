@@ -2,56 +2,35 @@
 session_start();
 require_once '../includes/config.php';
 
-// Redirect if already logged in
-if (isset($_SESSION['user_id'])) {
-    header('Location: ../index.php');
+// Check if user has requested password reset
+if (!isset($_SESSION['reset_otp']) || !isset($_SESSION['reset_email']) || !isset($_SESSION['reset_time'])) {
+    header("Location: forgot-password.php");
+    exit;
+}
+
+// Check if OTP has expired (10 minutes)
+if (time() - $_SESSION['reset_time'] > 600) {
+    session_destroy();
+    header("Location: forgot-password.php?error=expired");
     exit;
 }
 
 $error = '';
+$success = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
-
-    if (empty($username) || empty($password)) {
-        $error = "Please fill in all fields";
+    $otp = trim($_POST['otp']);
+    
+    if (empty($otp)) {
+        $error = "Please enter the OTP";
+    } elseif (!is_numeric($otp) || strlen($otp) != 6) {
+        $error = "Please enter a valid 6-digit OTP";
+    } elseif ($otp != $_SESSION['reset_otp']) {
+        $error = "Invalid OTP. Please try again.";
     } else {
-        $sql = "SELECT id, username, password FROM users WHERE username = ?";
-        
-        if ($stmt = mysqli_prepare($conn, $sql)) {
-            mysqli_stmt_bind_param($stmt, "s", $username);
-            
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_store_result($stmt);
-                
-                if (mysqli_stmt_num_rows($stmt) == 1) {
-                    mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password);
-                    if (mysqli_stmt_fetch($stmt)) {
-                        if (password_verify($password, $hashed_password)) {
-                            // Set session variables
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["user_id"] = $id;
-                            $_SESSION["username"] = $username;
-                            
-                            // Redirect to index page
-                            header("location: ../index.php");
-                            exit;
-                        } else {
-                            $error = "Invalid username or password";
-                        }
-                    }
-                } else {
-                    $error = "Invalid username or password";
-                }
-            } else {
-                $error = "Oops! Something went wrong. Please try again later.";
-            }
-
-            mysqli_stmt_close($stmt);
-        } else {
-            $error = "Oops! Something went wrong. Please try again later.";
-        }
+        // OTP is valid, redirect to reset password page
+        header("Location: reset_password.php");
+        exit;
     }
 }
 ?>
@@ -61,8 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Health & Fitness Center</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Verify OTP - Health & Fitness Center</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -75,6 +53,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             --gray: #e2e8f0;
             --dark-gray: #a0aec0;
             --error: #e74c3c;
+            --success: #38a169;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
@@ -204,6 +189,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
             transition: border-color 0.3s ease;
+            text-align: center;
+            letter-spacing: 0.5rem;
         }
         
         .form-control:focus {
@@ -236,7 +223,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .btn-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(79, 195, 161, 0.6);
-            background-color: #3daa8a;
         }
         
         .auth-footer {
@@ -268,26 +254,109 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-left: 4px solid var(--error);
         }
         
-        .password-container {
-            position: relative;
+        .alert-success {
+            background-color: rgba(56, 161, 105, 0.1);
+            color: var(--success);
+            border-left: 4px solid var(--success);
         }
         
-        .password-toggle {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
+        .timer {
+            text-align: center;
             color: var(--dark-gray);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .resend-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .resend-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .resend-link a:hover {
+            text-decoration: underline;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 4rem 0 0;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .footer-section {
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent);
+        }
+        
+        .footer-section p, .footer-section a {
+            color: var(--gray);
+            margin-bottom: 0.8rem;
+            display: block;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: var(--accent);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            transform: translateY(-3px);
+            color: var(--accent);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            margin-top: 2rem;
         }
         
         @media (max-width: 768px) {
             .navbar {
                 padding: 1rem;
-            }
-            
-            .logo h1 {
-                font-size: 1.5rem;
             }
             
             .auth-container {
@@ -305,21 +374,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 font-size: 1.5rem;
             }
         }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
     </style>
 </head>
 <body>
@@ -330,16 +384,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="nav-links">
                 <a href="../index.php" class="nav-item">Home</a>
+                <a href="login.php" class="nav-item">Login</a>
                 <a href="register.php" class="nav-item">Register</a>
             </div>
         </nav>
     </header>
 
     <main>
-        <div class="auth-container fade-in">
+        <div class="auth-container">
             <div class="auth-header">
-                <h2>Welcome Back</h2>
-                <p>Login to access your account</p>
+                <h2>Verify OTP</h2>
+                <p>Enter the 6-digit code sent to your email</p>
             </div>
             
             <?php if(!empty($error)): ?>
@@ -348,27 +403,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             <?php endif; ?>
             
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="login-form">
+            <?php if(!empty($success)): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> <?php echo $success; ?>
+                </div>
+            <?php endif; ?>
+            
+            <div class="timer">
+                Time remaining: <span id="countdown">10:00</span>
+            </div>
+            
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" class="form-control" required>
+                    <label for="otp">Enter OTP</label>
+                    <input type="text" name="otp" id="otp" class="form-control" required 
+                           maxlength="6" pattern="\d{6}" inputmode="numeric"
+                           value="<?php echo isset($_POST['otp']) ? htmlspecialchars($_POST['otp']) : ''; ?>">
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="password-container">
-                        <input type="password" name="password" id="password" class="form-control" required>
-                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Verify OTP</button>
                 </div>
                 
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </div>
-                
-                <div class="auth-footer">
-                    <p>Don't have an account? <a href="register.php">Register here</a></p>
-                    <p><a href="forgot-password.php">Forgot your password?</a></p>
+                <div class="resend-link">
+                    <a href="forgot-password.php">Resend OTP</a>
                 </div>
             </form>
         </div>
@@ -376,56 +434,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <footer>
         <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@healthfitness.com</p>
+                <p>Phone: (123) 456-7890</p>
+                <p>Address: 123 Fitness Street, Health City</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="about.php">About Us</a>
+                <a href="services.php">Services</a>
+                <a href="contact.php">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
             <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Password toggle visibility
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-        
-        togglePassword.addEventListener('click', function() {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-        });
-        
-        // Form validation
-        document.querySelector('.login-form').addEventListener('submit', function(e) {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (!username || !password) {
-                e.preventDefault();
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'alert alert-error';
-                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please fill in all fields';
-                
-                const form = document.querySelector('.login-form');
-                const existingError = document.querySelector('.alert-error');
-                
-                if (existingError) {
-                    form.replaceChild(errorDiv, existingError);
-                } else {
-                    form.insertBefore(errorDiv, form.firstChild);
+        // Countdown timer
+        function startTimer(duration, display) {
+            let timer = duration, minutes, seconds;
+            const countdown = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(countdown);
+                    display.textContent = "00:00";
+                    window.location.href = "forgot-password.php?error=expired";
                 }
-                
-                // Scroll to error
-                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
-        
-        // Clear error when typing
-        document.getElementById('username').addEventListener('input', clearError);
-        document.getElementById('password').addEventListener('input', clearError);
-        
-        function clearError() {
-            const errorDiv = document.querySelector('.alert-error');
-            if (errorDiv) {
-                errorDiv.remove();
-            }
+            }, 1000);
         }
+
+        window.onload = function () {
+            const tenMinutes = 60 * 10,
+                display = document.querySelector('#countdown');
+            startTimer(tenMinutes, display);
+        };
+
+        // OTP input formatting
+        document.getElementById('otp').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
     </script>
 </body>
-</html>
+</html> 

@@ -33,3 +33,32 @@
  
  window.addEventListener('scroll', animateOnScroll);
  window.addEventListener('load', animateOnScroll);
+
+ // Update the filter functionality to handle both category and type
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        if (this.tagName === 'A') return;
+        
+        e.preventDefault();
+        const category = this.dataset.category;
+        
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter results
+        document.querySelectorAll('.result-card').forEach(card => {
+            if (category === 'all') {
+                card.style.display = 'block';
+            } else {
+                const cardCategory = card.dataset.category;
+                const cardType = card.dataset.type;
+                if (cardCategory === category || (category === 'trainers' && cardType === 'trainer')) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+        });
+    });
+});

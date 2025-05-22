@@ -108,7 +108,9 @@ $bookings = mysqli_fetch_all($bookings_result, MYSQLI_ASSOC);
                             </div>
                             <div class="card-footer">
                                 <a href="edit-profile.php" class="btn btn-primary">Edit Profile</a>
+                                <a href="change-password.php" class="btn btn-outline" style="margin-top: 10px;">Change Password</a>
                             </div>
+
                         </div>
                     </div>
 
@@ -379,6 +381,7 @@ $bookings = mysqli_fetch_all($bookings_result, MYSQLI_ASSOC);
             font-size: 0.9rem;
             margin-bottom: 0.3rem;
         }
+        
         
         .info-item span {
             color: var(--dark);
