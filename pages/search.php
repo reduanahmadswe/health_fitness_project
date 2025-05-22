@@ -30,6 +30,7 @@ $category_result = mysqli_query($conn, $category_query);
 if ($category_result) {
     $categories = mysqli_fetch_all($category_result, MYSQLI_ASSOC);
 }
+
 ?>
 
 <!DOCTYPE html>

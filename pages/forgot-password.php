@@ -46,9 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <style>
                                 body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                                .header { background-color: #4CAF50; padding: 10px; color: white; text-align: center; }
+                                .header { background-color: #4a6fa5; padding: 10px; color: white; text-align: center; }
                                 .content { padding: 20px; background-color: #f9f9f9; }
-                                .button { display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; }
+                                .button { display: inline-block; padding: 10px 20px; background-color: #4a6fa5; color: white; text-decoration: none; border-radius: 4px; }
                                 .footer { margin-top: 20px; padding: 10px; text-align: center; font-size: 12px; color: #777; }
                             </style>
                         </head>
@@ -111,70 +111,269 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password - Health & Fitness Center</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .forgot-password-container {
-            max-width: 500px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: #fff;
-            border-radius: 8px;
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #166088;
+            --accent: #4fc3a1;
+            --dark: #2d3748;
+            --light: #f8f9fa;
+            --gray: #e2e8f0;
+            --dark-gray: #a0aec0;
+            --danger: #e53e3e;
+            --success: #38a169;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         
-        .forgot-password-form {
-            margin-top: 1.5rem;
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         
-        .form-group {
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, white, var(--gray));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            color: var(--accent);
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover::after {
+            width: 100%;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .auth-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-header h2 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-header p {
+            color: var(--dark-gray);
+        }
+        
+        .auth-form .form-group {
             margin-bottom: 1.5rem;
         }
         
-        .form-group label {
+        .form-label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
+            font-weight: 500;
+            color: var(--dark);
         }
         
         .form-control {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray);
+            border-radius: 8px;
             font-size: 1rem;
+            transition: all 0.3s ease;
         }
         
         .form-control:focus {
             outline: none;
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
         }
         
         .btn-primary {
-            background-color: #4CAF50;
+            background-color: var(--primary);
             color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.4);
         }
         
         .btn-primary:hover {
-            background-color: #3e8e41;
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.6);
         }
         
-        .text-center {
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--dark-gray);
+        }
+        
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .auth-footer a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background-color: rgba(229, 62, 62, 0.1);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .alert-success {
+            background-color: rgba(56, 161, 105, 0.1);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
             text-align: center;
         }
         
-        .small {
-            font-size: 0.875rem;
-            color: #666;
-            margin-top: 0.25rem;
-            display: block;
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .auth-container {
+                padding: 1.5rem;
+            }
+            
+            .auth-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .auth-container {
+                padding: 1.25rem;
+            }
         }
     </style>
 </head>
@@ -185,17 +384,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h1>Health & Fitness Center</h1>
             </div>
             <div class="nav-links">
-                <a href="../index.php">Home</a>
-                <a href="login.php">Login</a>
-                <a href="register.php">Register</a>
+                <a href="../index.php" class="nav-item">Home</a>
+                <a href="login.php" class="nav-item">Login</a>
+                <a href="register.php" class="nav-item">Register</a>
             </div>
         </nav>
     </header>
 
-    <main class="main-content">
-        <div class="forgot-password-container fade-in">
-            <h2 class="text-center">Forgot Password</h2>
-            <p class="text-center">Enter your email to receive a password reset link</p>
+    <main>
+        <div class="auth-container">
+            <div class="auth-header">
+                <h2>Forgot Password?</h2>
+                <p>Enter your email to receive a password reset link</p>
+            </div>
             
             <?php if(!empty($error)): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
@@ -205,24 +406,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
             <?php endif; ?>
             
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="forgot-password-form">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="auth-form">
                 <div class="form-group">
-                    <label for="email">Email Address</label>
+                    <label for="email" class="form-label">Email Address</label>
                     <input type="email" name="email" id="email" class="form-control" required 
                            value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
-                    <small class="small">Enter the email address associated with your account</small>
                 </div>
                 
                 <div class="form-group">
-                    <button type="submit" class="btn-primary btn-block">Send Reset Link</button>
+                    <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
                 </div>
                 
-                <p class="text-center">Remember your password? <a href="login.php">Login here</a></p>
+                <div class="auth-footer">
+                    Remember your password? <a href="login.php">Login here</a>
+                </div>
             </form>
         </div>
     </main>
 
-    <footer class="footer">
+    <footer>
         <div class="footer-content">
             <p>&copy; <?php echo date('Y'); ?> Health & Fitness Center. All rights reserved.</p>
         </div>
@@ -230,7 +432,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         // Enhanced form validation
-        document.querySelector('.forgot-password-form').addEventListener('submit', function(e) {
+        document.querySelector('.auth-form').addEventListener('submit', function(e) {
             const email = document.getElementById('email').value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             

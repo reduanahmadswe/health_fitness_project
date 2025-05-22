@@ -65,6 +65,7 @@ $trainers = [
                     <a href="trainers.php" class="nav-item active">Trainers</a>
                     <a href="feedback.php" class="nav-item">Feedback</a>
                     <a href="about.php" class="nav-item">About</a>
+                    <a href="search.php" class="nav-item">Search</a>
                 </div>
 
                 <!-- User Navigation -->
@@ -88,6 +89,7 @@ $trainers = [
             <p>Professional guidance tailored to your fitness journey</p>
         </section>
 
+
         <section class="trainers-grid">
             <div class="category-section">
                 <h2>Meet Our Team</h2>
@@ -95,7 +97,7 @@ $trainers = [
                     <?php foreach ($trainers as $trainer): ?>
                         <div class="trainer-card">
                             <div class="trainer-image">
-                                <img src="../images/<?php echo htmlspecialchars($trainer['image']); ?>" alt="<?php echo htmlspecialchars($trainer['name']); ?>">
+                            <img src="../images/trainers/<?php echo htmlspecialchars($trainer['image']); ?>" alt="<?php echo htmlspecialchars($trainer['name']); ?>">
                             </div>
                             <div class="trainer-info">
                                 <h3><?php echo htmlspecialchars($trainer['name']); ?></h3>
