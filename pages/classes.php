@@ -569,7 +569,7 @@ $classes = mysqli_fetch_all($result, MYSQLI_ASSOC);
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
+            <p>&copy; 2025 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
 

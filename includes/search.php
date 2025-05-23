@@ -19,7 +19,7 @@ try {
     $search_term = "%{$query}%";
     $results = [];
 
-    // Search in services table
+    
     $services_sql = "SELECT id, name, category, description, price, 'service' as type 
                     FROM services 
                     WHERE name LIKE ? 
@@ -40,7 +40,7 @@ try {
     $services = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $results = array_merge($results, $services);
 
-    // Search in trainers table
+ 
     $trainers_sql = "SELECT id, name, specialization as category, bio as description, 'trainer' as type 
                     FROM trainers 
                     WHERE name LIKE ? 
@@ -61,7 +61,7 @@ try {
     $trainers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $results = array_merge($results, $trainers);
 
-    // Format all results consistently
+   
     $formatted_results = array_map(function($item) {
         return [
             'id' => $item['id'],
@@ -69,7 +69,7 @@ try {
             'category' => $item['category'],
             'description' => $item['description'],
             'type' => $item['type'],
-            'price' => $item['price'] ?? null // Only services have price
+            'price' => $item['price'] ?? null 
         ];
     }, $results);
 

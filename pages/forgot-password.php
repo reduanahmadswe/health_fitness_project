@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please enter a valid email address";
     } else {
-        // Check if email exists
+       
         $sql = "SELECT id, username FROM users WHERE email = ?";
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "s", $email);
@@ -24,22 +24,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_bind_result($stmt, $id, $username);
                 mysqli_stmt_fetch($stmt);
                 
-                // Generate reset token
+               
                 $token = bin2hex(random_bytes(32));
                 $expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
                 
-                // Store token in database
+               
                 $sql = "UPDATE users SET reset_token = ?, reset_expiry = ? WHERE id = ?";
                 if ($stmt = mysqli_prepare($conn, $sql)) {
                     mysqli_stmt_bind_param($stmt, "ssi", $token, $expiry, $id);
                     
                     if (mysqli_stmt_execute($stmt)) {
-                        // Send reset email
+                      
                         $reset_link = "https://" . $_SERVER['HTTP_HOST'] . "/health_fitness_project/pages/reset-password.php?token=" . $token;
                         $to = $email;
                         $subject = "Password Reset Request - Health & Fitness Center";
                         
-                        // HTML email content
+
                         $message = '
                         <html>
                         <head>
@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $success = "Password reset instructions have been sent to your email. Please check your inbox (and spam folder).";
                         } else {
                             $error = "Failed to send reset email. Please try again later.";
-                            // Log the error for debugging
+                            
                             error_log("Failed to send password reset email to: " . $email);
                         }
                     } else {
@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     error_log("Database prepare statement error: " . mysqli_error($conn));
                 }
             } else {
-                // Don't reveal whether email exists or not for security
+              
                 $success = "If an account exists with this email, a password reset link has been sent.";
             }
         } else {
@@ -431,7 +431,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </footer>
 
     <script>
-        // Enhanced form validation
+       
         document.querySelector('.auth-form').addEventListener('submit', function(e) {
             const email = document.getElementById('email').value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

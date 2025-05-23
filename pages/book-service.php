@@ -2,13 +2,13 @@
 session_start();
 require_once '../includes/config.php';
 
-// Check if user is logged in
+
 if (!isset($_SESSION['user_id'])) {
     header("location: login.php");
     exit;
 }
 
-// Check if service ID is provided
+
 if (!isset($_GET['id'])) {
     header("location: services.php");
     exit;
@@ -18,7 +18,7 @@ $service_id = $_GET['id'];
 $error = '';
 $success = '';
 
-// Fetch service details
+
 $sql = "SELECT * FROM services WHERE id = ?";
 if ($stmt = mysqli_prepare($conn, $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $service_id);
@@ -32,17 +32,17 @@ if ($stmt = mysqli_prepare($conn, $sql)) {
     }
 }
 
-// Handle form submission
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $booking_date = trim($_POST['booking_date']);
     $booking_time = trim($_POST['booking_time']);
     
-    // Validate date and time
+    
     $current_date = date('Y-m-d');
     if ($booking_date < $current_date) {
         $error = "Please select a future date";
     } else {
-        // Check if the time slot is available
+        
         $sql = "SELECT id FROM bookings WHERE service_id = ? AND booking_date = ? AND booking_time = ? AND status != 'cancelled'";
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "iss", $service_id, $booking_date, $booking_time);
@@ -398,7 +398,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <select name="booking_time" id="booking_time" class="form-control" required>
                         <option value="">Choose a time</option>
                         <?php
-                        // Generate time slots from 8 AM to 8 PM
+                        
                         $start = strtotime('08:00');
                         $end = strtotime('20:00');
                         for ($time = $start; $time <= $end; $time += 3600) {
@@ -423,7 +423,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </footer>
 
     <script>
-        // Form validation
+        
         document.querySelector('.booking-form').addEventListener('submit', function(e) {
             const bookingDate = document.getElementById('booking_date').value;
             const bookingTime = document.getElementById('booking_time').value;
@@ -434,7 +434,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 return;
             }
             
-            // Check if date is in the future
+            
             const selectedDate = new Date(bookingDate);
             const today = new Date();
             today.setHours(0, 0, 0, 0);

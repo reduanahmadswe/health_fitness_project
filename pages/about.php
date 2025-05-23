@@ -525,21 +525,21 @@ require_once '../includes/config.php';
                     <div class="team-member">
                         <img src="../images/trainers/trainer1.jpg" alt="John Doe">
                         <div class="team-info">
-                            <h3>John Doe</h3>
+                            <h3>Reduan Ahmad</h3>
                             <p>Founder & CEO</p>
                         </div>
                     </div>
                     <div class="team-member">
                         <img src="../images/trainers/trainer2.jpg" alt="Jane Smith">
                         <div class="team-info">
-                            <h3>Jane Smith</h3>
+                            <h3>Humaira Jannat</h3>
                             <p>Head of Training</p>
                         </div>
                     </div>
                     <div class="team-member">
                         <img src="../images/trainers/trainer4.jpg" alt="Mike Johnson">
                         <div class="team-info">
-                            <h3>Mike Johnson</h3>
+                            <h3>Rabbi Hossain</h3>
                             <p>Fitness Director</p>
                         </div>
                     </div>
@@ -557,14 +557,14 @@ require_once '../includes/config.php';
                         </div>
                     </div>
                     <div class="facility-card">
-                        <img src="../images/pool.jpg" alt="Swimming Pool">
+                        <img src="../images/facilities/pool.png" alt="Swimming Pool">
                         <div class="facility-info">
                             <h3>Swimming Pool</h3>
                             <p>Olympic-sized pool for swimming and water aerobics</p>
                         </div>
                     </div>
                     <div class="facility-card">
-                        <img src="../images/yoga.jpg" alt="Yoga Studio">
+                        <img src="../images/facilities/yoga.jpg" alt="Yoga Studio">
                         <div class="facility-info">
                             <h3>Yoga Studio</h3>
                             <p>Peaceful environment for yoga and meditation</p>
@@ -599,13 +599,13 @@ require_once '../includes/config.php';
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
+            <p>&copy; 2025 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
 
     <script src="../js/main.js"></script>
     <script>
-        // Mobile menu toggle
+        
         document.querySelector('.hamburger').addEventListener('click', function() {
             document.querySelector('.nav-links').classList.toggle('active');
         });

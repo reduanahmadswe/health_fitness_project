@@ -2,7 +2,7 @@
 session_start();
 require_once '../includes/config.php';
 
-// Check if user is logged in
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -12,13 +12,13 @@ $user_id = $_SESSION['user_id'];
 $error = '';
 $success = '';
 
-// Handle form submission
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $current_password = trim($_POST['current_password']);
     $new_password = trim($_POST['new_password']);
     $confirm_password = trim($_POST['confirm_password']);
     
-    // Validate current password
+    
     $sql = "SELECT password FROM users WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $user_id);
@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Passwords do not match";
     }
     
-    // Update password if no errors
+    
     if (empty($error)) {
         $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
         $sql = "UPDATE users SET password = ? WHERE id = ?";
@@ -429,7 +429,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h1>Health & Fitness Center</h1>
             </div>
             <div class="nav-links">
-                <!-- Main Navigation -->
+                
                 <div class="nav-main">
                     <a href="../index.php" class="nav-item">Home</a>
                     <a href="services.php" class="nav-item">Services</a>
@@ -440,7 +440,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <a href="search.php" class="nav-item">Search</a>
                 </div>
 
-                <!-- User Navigation -->
+                
                 <div class="nav-user">
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <a href="profile.php" class="nav-item">Profile</a>
@@ -534,12 +534,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
+            <p>&copy; 2025 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Password toggle visibility
+        
         const toggleCurrentPassword = document.querySelector('#toggleCurrentPassword');
         const toggleNewPassword = document.querySelector('#toggleNewPassword');
         const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
@@ -566,7 +566,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             this.classList.toggle('fa-eye-slash');
         });
         
-        // Form validation
+        
         document.querySelector('form').addEventListener('submit', function(e) {
             const current = currentPassword.value.trim();
             const newPass = newPassword.value.trim();

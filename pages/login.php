@@ -2,7 +2,7 @@
 session_start();
 require_once '../includes/config.php';
 
-// Redirect if already logged in
+
 if (isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
@@ -29,12 +29,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password);
                     if (mysqli_stmt_fetch($stmt)) {
                         if (password_verify($password, $hashed_password)) {
-                            // Set session variables
+                           
                             $_SESSION["loggedin"] = true;
                             $_SESSION["user_id"] = $id;
                             $_SESSION["username"] = $username;
                             
-                            // Redirect to index page
+                           
                             header("location: ../index.php");
                             exit;
                         } else {
@@ -376,12 +376,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <footer>
         <div class="footer-content">
-            <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
+            <p>&copy; 2025 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Password toggle visibility
+
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#password');
         
@@ -391,7 +391,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             this.classList.toggle('fa-eye-slash');
         });
         
-        // Form validation
+       
         document.querySelector('.login-form').addEventListener('submit', function(e) {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
@@ -411,12 +411,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     form.insertBefore(errorDiv, form.firstChild);
                 }
                 
-                // Scroll to error
+                
                 errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
         
-        // Clear error when typing
+       
         document.getElementById('username').addEventListener('input', clearError);
         document.getElementById('password').addEventListener('input', clearError);
         

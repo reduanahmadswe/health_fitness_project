@@ -2,31 +2,31 @@
 session_start();
 require_once '../includes/config.php';
 
-// Sample trainers data (in a real application, this would come from a database)
+
 $trainers = [
     [
-        'name' => 'John Smith',
+        'name' => 'Reduan Ahmad',
         'specialization' => 'Strength Training',
         'experience' => '10 years',
         'bio' => 'Certified personal trainer specializing in strength and conditioning. Former professional athlete with a passion for helping others achieve their fitness goals.',
         'image' => 'trainer1.jpg'
     ],
     [
-        'name' => 'Sarah Johnson',
+        'name' => 'Humaira Jannat',
         'specialization' => 'Yoga & Pilates',
         'experience' => '8 years',
         'bio' => 'Experienced yoga and pilates instructor with a focus on mindfulness and body awareness. Helps clients improve flexibility and mental well-being.',
         'image' => 'trainer2.jpg'
     ],
     [
-        'name' => 'Mike Wilson',
+        'name' => 'Ammatullah Islam',
         'specialization' => 'HIIT & Cardio',
         'experience' => '6 years',
         'bio' => 'HIIT specialist with a background in competitive sports. Creates high-energy workouts that maximize results in minimal time.',
         'image' => 'trainer3.jpg'
     ],
     [
-        'name' => 'Emily Brown',
+        'name' => 'Rabbi Hossain',
         'specialization' => 'Nutrition & Wellness',
         'experience' => '12 years',
         'bio' => 'Certified nutritionist and wellness coach. Combines exercise science with nutritional expertise to help clients achieve optimal health.',
@@ -57,7 +57,7 @@ $trainers = [
             </div>
             
             <div class="nav-links">
-                <!-- Main Navigation -->
+               
                 <div class="nav-main">
                     <a href="../index.php" class="nav-item">Home</a>
                     <a href="services.php" class="nav-item">Services</a>
@@ -68,7 +68,7 @@ $trainers = [
                     <a href="search.php" class="nav-item">Search</a>
                 </div>
 
-                <!-- User Navigation -->
+                
                 <div class="nav-user">
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <a href="profile.php" class="nav-item"><i class="fas fa-user"></i> Profile</a>
@@ -678,7 +678,7 @@ $trainers = [
     </style>
 
     <script>
-        // Mobile menu toggle
+
         document.getElementById('mobile-menu').addEventListener('click', function() {
             document.querySelector('.nav-links').classList.toggle('active');
         });

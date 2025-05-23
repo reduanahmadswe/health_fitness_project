@@ -8,7 +8,7 @@ hamburger.addEventListener("click", () => {
     : '<i class="fas fa-bars"></i>';
 });
 
-// Add animation to elements as they come into view
+
 const animateOnScroll = () => {
   const elements = document.querySelectorAll(".class-card, .schedule-card");
 
@@ -23,7 +23,7 @@ const animateOnScroll = () => {
   });
 };
 
-// Set initial state for animation
+
 document.querySelectorAll(".class-card, .schedule-card").forEach((element) => {
   element.style.opacity = "0";
   element.style.transform = "translateY(20px)";

@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         searchResults.style.display = 'block';
     }
 
-    // Helper function to escape HTML
+ 
     function escapeHtml(unsafe) {
         return unsafe
             .replace(/&/g, "&amp;")
@@ -64,14 +64,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/'/g, "&#039;");
     }
 
-    // Close search results when clicking outside
+
     document.addEventListener('click', function(e) {
         if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
             searchResults.style.display = 'none';
         }
     });
 
-    // Handle keyboard navigation
+
     searchInput.addEventListener('keydown', function(e) {
         const results = searchResults.querySelectorAll('.search-result-item');
         const currentIndex = Array.from(results).findIndex(item => item === document.activeElement);

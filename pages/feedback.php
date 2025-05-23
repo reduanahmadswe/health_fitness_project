@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch user's previous feedback if logged in
+
 $previous_feedback = [];
 
 if (isset($_SESSION['user_id'])) {
@@ -49,7 +49,6 @@ if (isset($_SESSION['user_id'])) {
 
 
 
-// Fetch user's previous feedback if logged in
 $previous_feedback = [];
 if (isset($_SESSION['user_id'])) {
     $sql = "SELECT * FROM feedback WHERE user_id = ? ORDER BY created_at DESC";
@@ -564,7 +563,7 @@ if (isset($_SESSION['user_id'])) {
                 <i class="fas fa-bars"></i>
             </div>
             <div class="nav-links">
-                <!-- Main Navigation -->
+               
                 <div class="nav-main">
                     <a href="../index.php" class="nav-item">Home</a>
                     <a href="services.php" class="nav-item">Services</a>
@@ -575,7 +574,7 @@ if (isset($_SESSION['user_id'])) {
                     <a href="search.php" class="nav-item">Search</a>
                 </div>
 
-                <!-- User Navigation -->
+                
                 <div class="nav-user">
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <a href="profile.php" class="nav-item">Profile</a>
@@ -609,7 +608,7 @@ if (isset($_SESSION['user_id'])) {
         <?php endif; ?>
 
         <?php
-// Initialize variables to avoid "undefined variable" warnings
+
 $rating = isset($_POST['rating']) ? $_POST['rating'] : '';
 $message = isset($_POST['message']) ? $_POST['message'] : '';
 
@@ -683,7 +682,7 @@ $message = isset($_POST['message']) ? $_POST['message'] : '';
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
+            <p>&copy; 2025 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
 

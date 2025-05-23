@@ -2,13 +2,13 @@
 session_start();
 require_once '../includes/config.php';
 
-// Check if user is logged in
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Check if booking ID is provided via POST
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['booking_id']) || empty($_POST['booking_id'])) {
     $_SESSION['error'] = "Invalid request";
     header('Location: bookings.php');
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['booking_id']) || emp
 $booking_id = $_POST['booking_id'];
 $user_id = $_SESSION['user_id'];
 
-// Verify the booking belongs to the user and is pending
+
 $sql = "SELECT id FROM bookings WHERE id = ? AND user_id = ? AND status = 'pending'";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "ii", $booking_id, $user_id);

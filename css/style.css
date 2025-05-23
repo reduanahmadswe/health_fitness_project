@@ -1,4 +1,4 @@
-/* Reset and base styles */
+
 * {
     margin: 0;
     padding: 0;
@@ -11,7 +11,7 @@ body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-/* Header styles */
+
 .header {
     background: linear-gradient(to right, #2c3e50, #3498db);
     color: white;
@@ -39,13 +39,13 @@ body {
     gap: 2rem;
 }
 
-/* Main Navigation */
+
 .nav-main {
     display: flex;
     gap: 1.5rem;
 }
 
-/* Search Container */
+
 .search-container {
     position: relative;
     margin: 0 1rem;
@@ -73,13 +73,13 @@ body {
     color: #666;
 }
 
-/* User Navigation */
+
 .nav-user {
     display: flex;
     gap: 1.5rem;
 }
 
-/* Navigation Items */
+
 .nav-item {
     text-decoration: none;
     color: white;
@@ -108,7 +108,7 @@ body {
     width: 100%;
 }
 
-/* Form styles */
+
 .form-container {
     max-width: 500px;
     margin: 2rem auto;
@@ -142,7 +142,7 @@ body {
     outline: none;
 }
 
-/* Button styles */
+
 .btn {
     padding: 0.8rem 1.5rem;
     border: none;
@@ -162,7 +162,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* Card styles */
+
 .card {
     background: white;
     border-radius: 15px;
@@ -176,7 +176,7 @@ body {
     transform: translateY(-5px);
 }
 
-/* Grid layout */
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -184,7 +184,7 @@ body {
     padding: 2rem;
 }
 
-/* Responsive design */
+
 @media (max-width: 1024px) {
     .nav-links {
         gap: 1rem;
@@ -239,7 +239,7 @@ body {
     }
 }
 
-/* Animation classes */
+
 .fade-in {
     animation: fadeIn 0.5s ease-in;
 }
@@ -255,7 +255,7 @@ body {
     }
 }
 
-/* Alert messages */
+
 .alert {
     padding: 1rem;
     border-radius: 8px;

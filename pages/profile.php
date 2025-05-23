@@ -2,13 +2,13 @@
 session_start();
 require_once '../includes/config.php';
 
-// Check if user is logged in
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Fetch user data
+
 $user_id = $_SESSION['user_id'];
 $sql = "SELECT * FROM users WHERE id = ?";
 $stmt = mysqli_prepare($conn, $sql);
@@ -17,7 +17,7 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $user = mysqli_fetch_assoc($result);
 
-// Fetch user's bookings
+
 $sql = "SELECT b.*, s.name as service_name, s.category 
         FROM bookings b 
         JOIN services s ON b.service_id = s.id 
@@ -50,7 +50,7 @@ $bookings = mysqli_fetch_all($bookings_result, MYSQLI_ASSOC);
                 <i class="fas fa-bars"></i>
             </div>
             <div class="nav-links">
-                <!-- Main Navigation -->
+
                 <div class="nav-main">
                     <a href="../index.php" class="nav-item">Home</a>
                     <a href="services.php" class="nav-item">Services</a>
@@ -61,7 +61,7 @@ $bookings = mysqli_fetch_all($bookings_result, MYSQLI_ASSOC);
                     <a href="search.php" class="nav-item">Search</a>
                 </div>
 
-                <!-- User Navigation -->
+
                 <div class="nav-user">
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <a href="profile.php" class="nav-item active">Profile</a>
@@ -183,12 +183,12 @@ $bookings = mysqli_fetch_all($bookings_result, MYSQLI_ASSOC);
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Health & Fitness Center. All rights reserved.</p>
+            <p>&copy; 2025 Health & Fitness Center. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Mobile menu toggle
+
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.querySelector('.nav-links');
         

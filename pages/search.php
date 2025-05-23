@@ -2,12 +2,12 @@
 session_start();
 require_once '../includes/config.php';
 
-// Get search query from URL parameter
+
 $search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
 $results = [];
 
 if (!empty($search_query)) {
-    // Search in services table with prepared statement
+    
     $sql = "SELECT * FROM services WHERE 
             name LIKE ? OR 
             description LIKE ? OR 
@@ -23,7 +23,7 @@ if (!empty($search_query)) {
     $results = mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
-// Get all categories for filter
+
 $categories = [];
 $category_query = "SELECT DISTINCT category FROM services ORDER BY category";
 $category_result = mysqli_query($conn, $category_query);
@@ -184,7 +184,7 @@ if ($category_result) {
             color: var(--primary);
         }
         
-        /* Search Hero Section */
+       
         .search-hero {
             background: linear-gradient(135deg, rgba(74, 111, 165, 0.9), rgba(22, 96, 136, 0.9)), url('../images/search-bg.jpeg');
             background-size: cover;
@@ -256,7 +256,7 @@ if ($category_result) {
             transform: scale(1.05);
         }
         
-        /* Search Content Section */
+       
         .search-content {
             padding: 4rem 0;
             max-width: 1400px;
@@ -293,7 +293,7 @@ if ($category_result) {
             margin: 0 auto;
         }
         
-        /* Filter Section */
+       
         .filter-section {
             display: flex;
             justify-content: center;
@@ -318,7 +318,7 @@ if ($category_result) {
             border-color: var(--accent);
         }
         
-        /* Results Grid */
+        
         .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -412,7 +412,7 @@ if ($category_result) {
             border-radius: 2px;
         }
         
-        /* Footer Styles */
+        
         footer {
             background-color: var(--dark);
             color: white;
@@ -480,7 +480,7 @@ if ($category_result) {
             margin-top: 2rem;
         }
         
-        /* Animations */
+       
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -503,7 +503,7 @@ if ($category_result) {
             }
         }
         
-        /* Responsive Styles */
+        
         @media (max-width: 992px) {
             .search-hero h1 {
                 font-size: 2.5rem;
@@ -577,11 +577,11 @@ if ($category_result) {
         </div>
 
         <div class="hamburger" id="mobile-menu">
-            <!-- Hamburger icon removed -->
+           
         </div>
 
         <div class="nav-links">
-            <!-- Main Navigation -->
+
             <div class="nav-main">
                 <a href="../index.php" class="nav-item">Home</a>
                 <a href="services.php" class="nav-item">Services</a>
@@ -592,7 +592,7 @@ if ($category_result) {
                 <a href="search.php" class="nav-item active">Search</a>
             </div>
 
-            <!-- User Navigation -->
+            
             <div class="nav-user">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="profile.php" class="nav-item">Profile</a>
@@ -728,7 +728,7 @@ if ($category_result) {
     </footer>
 
     <script>
-        // Mobile menu toggle
+      
         document.addEventListener('DOMContentLoaded', function() {
             const menuToggle = document.getElementById('mobile-menu');
             const navLinks = document.querySelector('.nav-links');
@@ -738,7 +738,7 @@ if ($category_result) {
                 navLinks.classList.toggle('active');
             });
 
-            // Close menu when clicking on a nav item
+
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => {
                 item.addEventListener('click', function() {
@@ -747,7 +747,7 @@ if ($category_result) {
                 });
             });
 
-            // Category filter functionality
+           
             const filterBtns = document.querySelectorAll('.filter-btn');
             if (filterBtns.length > 0) {
                 filterBtns.forEach(btn => {
@@ -757,11 +757,11 @@ if ($category_result) {
                         e.preventDefault();
                         const category = this.dataset.category;
                         
-                        // Update active button
+                       
                         filterBtns.forEach(b => b.classList.remove('active'));
                         this.classList.add('active');
                         
-                        // Filter results
+                       
                         if (category === 'all') {
                             document.querySelectorAll('.result-card').forEach(card => {
                                 card.style.display = 'block';
@@ -779,7 +779,7 @@ if ($category_result) {
                 });
             }
 
-            // Highlight search terms in results
+           
             function highlightKeywords(text, query) {
                 if (!query) return text;
                 const terms = query.split(' ').filter(term => term.length > 0);
@@ -795,7 +795,7 @@ if ($category_result) {
 </html>
 
 <?php
-// Function to highlight search keywords in text
+
 function highlightKeywords($text, $query) {
     if (empty($query)) return $text;
     $terms = explode(' ', $query);

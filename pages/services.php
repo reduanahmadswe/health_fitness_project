@@ -429,7 +429,7 @@ foreach ($services as $service) {
                 <i class="fas fa-bars"></i>
             </div>
             <div class="nav-links">
-                <!-- Main Navigation -->
+                
                 <div class="nav-main">
                     <a href="../index.php" class="nav-item">Home</a>
                     <a href="services.php" class="nav-item">Services</a>
@@ -440,7 +440,7 @@ foreach ($services as $service) {
                     <a href="search.php" class="nav-item">Search</a>
                 </div>
 
-                <!-- User Navigation -->
+                
                 <div class="nav-user">
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <a href="profile.php" class="nav-item">Profile</a>
@@ -470,7 +470,7 @@ foreach ($services as $service) {
                             <div class="card service-card">
                                 <div class="service-icon">
                                     <?php
-                                    // Set icon based on category
+                                    
                                     $icon = 'fa-dumbbell';
                                     switch ($category) {
                                         case 'Personal Training':

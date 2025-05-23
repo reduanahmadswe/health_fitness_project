@@ -1,4 +1,4 @@
- // Mobile menu toggle
+
  const hamburger = document.querySelector('.hamburger');
  const navLinks = document.querySelector('.nav-links');
  
@@ -9,7 +9,7 @@
          : '<i class="fas fa-bars"></i>';
  });
  
- // Add animation to service cards as they come into view
+
  const animateOnScroll = () => {
      const serviceCards = document.querySelectorAll('.service-card');
      
@@ -24,7 +24,7 @@
      });
  };
  
- // Set initial state for animation
+
  document.querySelectorAll('.service-card').forEach(card => {
      card.style.opacity = '0';
      card.style.transform = 'translateY(20px)';
@@ -34,7 +34,7 @@
  window.addEventListener('scroll', animateOnScroll);
  window.addEventListener('load', animateOnScroll);
 
- // Update the filter functionality to handle both category and type
+ 
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
         if (this.tagName === 'A') return;
@@ -42,11 +42,11 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         e.preventDefault();
         const category = this.dataset.category;
         
-        // Update active button
+       
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         
-        // Filter results
+      
         document.querySelectorAll('.result-card').forEach(card => {
             if (category === 'all') {
                 card.style.display = 'block';

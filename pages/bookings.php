@@ -2,13 +2,13 @@
 session_start();
 require_once '../includes/config.php';
 
-// Check if user is logged in
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Display success/error messages
+
 if (isset($_SESSION['success'])) {
     echo '<div class="alert alert-success">' . $_SESSION['success'] . '</div>';
     unset($_SESSION['success']);
@@ -19,7 +19,7 @@ if (isset($_SESSION['error'])) {
     unset($_SESSION['error']);
 }
 
-// Fetch user's bookings
+
 $user_id = $_SESSION['user_id'];
 $sql = "SELECT b.*, s.name as service_name, s.category, s.price 
         FROM bookings b 
@@ -172,7 +172,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             background-color: #c0392b;
         }
         
-        /* Bookings Hero Section */
+       
         .bookings-hero {
             background: linear-gradient(135deg, rgba(74, 111, 165, 0.9), rgba(22, 96, 136, 0.9)), url('../images/my-booking.jpg');
             background-size: cover;
@@ -195,7 +195,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             animation: fadeInUp 1s ease;
         }
         
-        /* Bookings Content */
+        
         .bookings-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -312,7 +312,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             margin-bottom: 2rem;
         }
         
-        /* Footer Styles */
+        
         footer {
             background-color: var(--dark);
             color: white;
@@ -409,7 +409,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             display: inline;
         }
         
-        /* Animations */
+        
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -432,7 +432,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             }
         }
         
-        /* Responsive Styles */
+       
         @media (max-width: 992px) {
             .bookings-hero h1 {
                 font-size: 2.5rem;
@@ -516,7 +516,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <i class="fas fa-bars"></i>
             </div>
             <div class="nav-links">
-                <!-- Main Navigation -->
+                
                 <div class="nav-main">
                     <a href="../index.php" class="nav-item">Home</a>
                     <a href="services.php" class="nav-item">Services</a>
@@ -527,7 +527,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
                     <a href="search.php" class="nav-item">Search</a>
                 </div>
 
-                <!-- User Navigation -->
+                
                 <div class="nav-user">
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <a href="profile.php" class="nav-item">Profile</a>
@@ -631,7 +631,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
     </footer>
 
     <script>
-        // Mobile menu toggle
+        
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.querySelector('.nav-links');
         
@@ -639,7 +639,7 @@ $bookings = mysqli_fetch_all($result, MYSQLI_ASSOC);
             navLinks.classList.toggle('active');
         });
         
-        // Close menu when clicking on a nav item
+        
         const navItems = document.querySelectorAll('.nav-item');
         navItems.forEach(item => {
             item.addEventListener('click', () => {

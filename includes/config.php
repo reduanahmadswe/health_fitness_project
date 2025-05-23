@@ -1,19 +1,19 @@
 <?php
-// Database configuration
+
 define('DB_SERVER', 'localhost');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_NAME', 'health_fitness_db');
 
-// Attempt to connect to MySQL database
+
 $conn = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD);
 
-// Check connection
+
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Create database if it doesn't exist
+
 $sql = "CREATE DATABASE IF NOT EXISTS " . DB_NAME;
 if (mysqli_query($conn, $sql)) {
     mysqli_select_db($conn, DB_NAME);
@@ -21,7 +21,7 @@ if (mysqli_query($conn, $sql)) {
     die("Error creating database: " . mysqli_error($conn));
 }
 
-// Create users table
+
 $sql = "CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -38,7 +38,7 @@ if (!mysqli_query($conn, $sql)) {
     die("Error creating users table: " . mysqli_error($conn));
 }
 
-// Create services table
+
 $sql = "CREATE TABLE IF NOT EXISTS services (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -52,7 +52,7 @@ if (!mysqli_query($conn, $sql)) {
     die("Error creating services table: " . mysqli_error($conn));
 }
 
-// Create bookings table
+
 $sql = "CREATE TABLE IF NOT EXISTS bookings (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -69,7 +69,7 @@ if (!mysqli_query($conn, $sql)) {
     die("Error creating bookings table: " . mysqli_error($conn));
 }
 
-// Create feedback table
+
 $sql = "CREATE TABLE IF NOT EXISTS feedback (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -83,7 +83,7 @@ if (!mysqli_query($conn, $sql)) {
     die("Error creating feedback table: " . mysqli_error($conn));
 }
 
-// Insert sample services if they don't exist
+
 $check_services = "SELECT COUNT(*) as count FROM services";
 $result = mysqli_query($conn, $check_services);
 $row = mysqli_fetch_assoc($result);
